@@ -158,8 +158,6 @@
             border-radius: 0.5rem;
             min-height: 100px;
             display: none;
-            max-height: 200px;
-            overflow-y: auto;
         }
 
         .loading {
@@ -195,16 +193,7 @@
                 <svg class="file-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
-                <span class="file-name" id="paperName">Document.pdf</span><br>
-                <div>
-                <a href="#" id="paperLink"
-                class="inline-flex items-center mt-3 font-medium transition-colors duration-200" 
-                target="_blank">
-                    Read Paper
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                    </svg>
-                </a></div>
+                <span class="file-name">Document.pdf</span>
             </div>
 
             <div class="input-group">
@@ -213,10 +202,10 @@
             </div>
 
             <div class="suggestions">
-                <div class="suggestion-chip">Generate an abstract for this research paper</div>
-                <div class="suggestion-chip">Summarize this research paper</div>
-                <div class="suggestion-chip">Extract key data from the research paper</div>
-            </div>            
+                <div class="suggestion-chip">Analyze Document</div>
+                <div class="suggestion-chip">Summarize Text</div>
+                <div class="suggestion-chip">Extract Data</div>
+            </div>
 
             <div class="loading" id="loading"></div>
             <div class="response-area" id="response"></div>
@@ -225,17 +214,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const url = new URL(window.location.href);
-            const params = new URLSearchParams(url.search);
-            const paper_name = params.get("paper_name");
-            const paper_link = params.get("paper_link");
-            const paperName = document.getElementById('paperName');
-            paperName.textContent = paper_name;
-
-            const paperLink = document.getElementById('paperLink');
-            paperLink.href = paper_link;
-
-
             const modal = document.getElementById('aiModal');
             // const triggerBtn = document.querySelector('.trigger-btn');
             // const closeBtn = document.querySelector('.close-btn');
@@ -244,8 +222,6 @@
             const askBtn = document.querySelector('.ask-btn');
             const loading = document.getElementById('loading');
             const responseArea = document.getElementById('response');
-
-
 
             // Open modal
             // triggerBtn.addEventListener('click', () => {
@@ -285,29 +261,16 @@
                 responseArea.style.display = 'none';
 
                 try {
-                    const response = await fetch("http://127.0.0.1:8000/query", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        pdf_url: paper_link,
-                        question: query
-                    })
-                });
+                    // Simulate API call - Replace with your actual API endpoint
+                    const response = await new Promise(resolve => setTimeout(() => {
+                        resolve({
+                            text: "This is a simulated AI response. Replace this with your actual API call and response handling."
+                        });
+                    }, 2000));
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                // Extract AI response from choices array
-                const aiResponse = data.choices?.[0]?.message?.content || "No response from AI";
-
-                // Show response
-                responseArea.textContent = aiResponse;
-                responseArea.style.display = 'block';
+                    // Show response
+                    responseArea.textContent = response.text;
+                    responseArea.style.display = 'block';
                 } catch (error) {
                     responseArea.textContent = "Error: Could not get response from AI";
                     responseArea.style.display = 'block';

@@ -13,6 +13,8 @@ from pathlib import Path
 import requests # type: ignore
 import json
 from dotenv import load_dotenv
+from datetime import datetime
+
 
 app = FastAPI()
 load_dotenv()
@@ -268,13 +270,14 @@ def get_user_id(metamask_id: str, conn=Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return {"user_id": result[0]}
 
+
 @app.post("/create-post/")
 def create_post(post: PostCreate, conn=Depends(get_db)):
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT INTO post (user_id, title, content, paper_link)
-        VALUES (?, ?, ?, ?)
-    """, (post.user_id, post.title, post.content, post.paper_link))
+        INSERT INTO post (user_id, title, content, paper_link, created_at)
+        VALUES (?, ?, ?, ?, ?)
+    """, (post.user_id, post.title, post.content, post.paper_link, datetime.utcnow()))
     conn.commit()
     return {"message": "Post created successfully"}
 
