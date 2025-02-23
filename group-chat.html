@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DecentraNet Group Chat</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <style>
+    /* Custom Animations */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .logo-pulse {
+      animation: pulse 2s infinite;
+    }
+
+    /* Custom Styles */
+    .sidebar {
+      width: 280px;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      background-color: #1a1a1a;
+      border-right: 1px solid #2d2d2d;
+    }
+
+    .main-content {
+      margin-left: 280px;
+      height: 100vh;
+      background-color: #000000;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 24px;
+      color: #e5e5e5;
+      transition: all 0.3s;
+      border-radius: 9999px;
+      margin: 4px 0;
+    }
+
+    .nav-item:hover {
+      background-color: #2d2d2d;
+      color: #ffffff;
+    }
+
+    .chat-container {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .message {
+      display: flex;
+      margin-bottom: 20px;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message-input {
+      background-color: #2d2d2d;
+      border: 1px solid #404040;
+      border-radius: 24px;
+      padding: 16px 24px;
+      color: white;
+      transition: all 0.3s;
+      width: 100%;
+    }
+
+    .message-input:focus {
+      border-color: #1da1f2;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.2);
+    }
+
+    .send-button {
+      background-color: #1da1f2;
+      color: white;
+      border-radius: 9999px;
+      padding: 12px 24px;
+      transition: all 0.3s;
+    }
+
+    .send-button:hover {
+      background-color: #1991db;
+    }
+
+    /* Scrollbar Styling */
+    .chat-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .chat-container::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+
+    .chat-container::-webkit-scrollbar-thumb {
+      background: #2d2d2d;
+      border-radius: 4px;
+    }
+
+    .chat-container::-webkit-scrollbar-thumb:hover {
+      background: #404040;
+    }
+  </style>
+</head>
+<body class="bg-black text-white">
+  <!-- Sidebar -->
+  <div class="sidebar p-6">
+    <!-- Logo -->
+    <div class="flex items-center gap-3 mb-8">
+        <!-- <div class="w-10 h-10 rounded-full bg-blue-400 logo-pulse"></div> -->
+        <div class="w-12 h-12 rounded-full bg-gray-700">
+            <img src="https://www.cdnsol.com/blog/wp-content/uploads/2018/03/Decentralized-Blockchain-Development.gif" alt="Profile" class="w-full h-full rounded-full">
+          </div>
+        <span class="text-2xl font-bold text-blue-400">DecentraNet</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="space-y-2">
+        <a href="/" class="nav-item">
+            <svg class="w-6 h-6 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            Home
+        </a>
+        <a href="/profile/" class="nav-item">
+            <svg class="w-6 h-6 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            Profile
+        </a>
+        <a href="/create-post/" class="nav-item">
+            <svg class="w-6 h-6 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Create Post
+        </a>
+        <a href="/chat/" class="nav-item">
+            <svg class="w-6 h-6 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+            Chat
+        </a>
+        <a href="/group-chat/" class="nav-item bg-gray-800">
+            <svg class="w-6 h-6 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+            Group Chat
+        </a>
+    </nav>
+</div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Chat Header -->
+    <div class="border-b border-gray-800 p-4">
+      <div class="max-w-4xl mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center">
+            <span class="text-lg font-bold">#</span>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold">Group Chat</h1>
+            <p class="text-sm text-gray-400">Connect with your community</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <span class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-green-500"></span>
+            <span class="text-sm text-gray-400">Online</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div id="group-chat-box" class="chat-container max-w-4xl" style="margin-left: 10rem; margin-right: 10rem;">
+      <!-- Messages will be inserted here -->
+    </div>
+
+    <!-- Message Input -->
+    <div class="border-t border-gray-800 p-4">
+      <div class="max-w-4xl mx-auto">
+        <form id="group-message-form" class="flex items-center gap-4">
+          <input 
+            type="text" 
+            id="group-message-input" 
+            class="message-input"
+            placeholder="Type a message..." 
+            required
+          >
+          <button type="submit" class="send-button">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/scripts.js"></script>
+
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Get DOM elements
+  const chatBox = document.getElementById('group-chat-box');
+  const messageForm = document.getElementById('group-message-form');
+  const messageInput = document.getElementById('group-message-input');
+
+  // Test if elements are found
+  console.log('Chat box found:', !!chatBox);
+  console.log('Message form found:', !!messageForm);
+  console.log('Message input found:', !!messageInput);
+
+  // Get user details
+  const groupId = localStorage.getItem('groupId') || "1";
+  const userId = localStorage.getItem('userid') || "anonymous-" + Math.random().toString(36).substr(2, 9);
+  const username = localStorage.getItem('username') || "User-" + Math.random().toString(36).substr(2, 4);
+
+  console.log('User details:', { groupId, userId, username });
+
+  // Initialize WebSocket
+  const ws = new WebSocket(`ws://localhost:8000/ws/group-chat/${groupId}`);
+
+  // WebSocket event handlers
+  ws.onopen = () => {
+    console.log("WebSocket connected");
+    addSystemMessage("Connected to chat room");
+  };
+
+  ws.onclose = () => {
+    console.log("WebSocket disconnected");
+    addSystemMessage("Disconnected from chat room");
+  };
+
+  ws.onerror = (error) => {
+    console.error("WebSocket error:", error);
+    addSystemMessage("Error in chat connection");
+  };
+
+  ws.onmessage = (event) => {
+    console.log("Message received:", event.data);
+    try {
+      const messageData = JSON.parse(event.data);
+      addChatMessage(messageData);
+    } catch (error) {
+      console.error("Error parsing message:", error);
+      addSystemMessage("Error displaying message");
+    }
+  };
+
+  // Handle form submission
+  messageForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const message = messageInput.value.trim();
+    
+    if (!message) return;
+
+    console.log("Sending message:", message);
+    
+    const messageData = {
+      userId: userId,
+      username: username,
+      message: message,
+      timestamp: new Date().toISOString()
+    };
+
+    // Send message
+    ws.send(JSON.stringify(messageData));
+    messageInput.value = '';
+  });
+
+  // Function to add a chat message
+  function addChatMessage(data) {
+    console.log("Adding chat message:", data);
+    
+    const messageElement = document.createElement('div');
+    messageElement.className = 'message flex items-start gap-4 mb-4';
+    
+    const isOwnMessage = data.userId === userId;
+    const messageHtml = `
+      <div class="w-10 h-10 rounded-full ${isOwnMessage ? 'bg-blue-500' : 'bg-gray-700'} flex-shrink-0 flex items-center justify-center">
+        ${(data.username || 'A')[0].toUpperCase()}
+      </div>
+      <div class="flex-grow">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="font-semibold">${data.username || 'Anonymous'}</span>
+          <span class="text-xs text-gray-400">${new Date(data.timestamp).toLocaleTimeString()}</span>
+        </div>
+        <div class="${isOwnMessage ? 'bg-blue-600' : 'bg-gray-800'} rounded-lg p-3 inline-block max-w-[80%]">
+          ${escapeHtml(data.message)}
+        </div>
+      </div>
+    `;
+    
+    messageElement.innerHTML = messageHtml;
+    chatBox.appendChild(messageElement);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  // Function to add a system message
+  function addSystemMessage(message) {
+    console.log("Adding system message:", message);
+    
+    const systemElement = document.createElement('div');
+    systemElement.className = 'text-center text-gray-500 text-sm my-4';
+    systemElement.textContent = message;
+    chatBox.appendChild(systemElement);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  // Utility function to escape HTML
+  function escapeHtml(unsafe) {
+    return unsafe
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  // // Add test message to verify UI
+  // setTimeout(() => {
+  //   addChatMessage({
+  //     userId: "test-user",
+  //     username: "Test User",
+  //     message: "This is a test message to verify the chat UI is working",
+  //     timestamp: new Date().toISOString()
+  //   });
+  // }, 1000);
+});
+</script>
+</body>
+</html>

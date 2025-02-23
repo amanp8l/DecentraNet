@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DecentraNet Chat</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom Styles */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background-color: #1a1a1a;
+            border-right: 1px solid #2d2d2d;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            background-color: #000000;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: #e5e5e5;
+            transition: all 0.3s;
+            border-radius: 9999px;
+            margin: 4px 0;
+        }
+
+        .nav-item:hover {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+
+        .chat-container {
+            height: calc(100vh - 180px);
+            background-color: #1a1a1a;
+            border-radius: 16px;
+            border: 1px solid #2d2d2d;
+        }
+
+        .chat-box {
+            height: calc(100% - 70px);
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .chat-box::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-box::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        .chat-box::-webkit-scrollbar-thumb {
+            background: #2d2d2d;
+            border-radius: 3px;
+        }
+
+        .message {
+            margin: 8px 0;
+            max-width: 60%;
+            word-wrap: break-word;
+            box-shadow: 0 4px 8px 0 rgb(31 175 235 / 90%), 0 6px 10px 0 rgb(240 49 243 / 49%);
+        }
+
+        .sent {
+            margin-left: auto !important;
+            background-color: #1da1f2;
+            color: white;
+            border-radius: 16px 16px 0 16px;
+            padding: 12px 16px;
+        }
+
+        .received {
+            margin-right: auto;
+            background-color: #2d2d2d;
+            color: white;
+            border-radius: 16px 16px 16px 0;
+            padding: 12px 16px;
+        }
+
+        .user-list-item {
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            margin: 4px 0;
+        }
+
+        .user-list-item:hover {
+            background-color: #2d2d2d;
+        }
+
+        .user-list-item.active {
+            background-color: #1da1f2;
+            color: white;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #2d2d2d;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .logo-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        .file-upload-button {
+            display: flex;
+            align-items: center;
+            background: none;
+            border: none;
+            color: #1da1f2;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .file-upload-button:hover {
+            background-color: rgba(29, 161, 242, 0.1);
+        }
+
+        .file-message {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: #2d2d2d;
+            padding: 12px;
+            border-radius: 12px;
+            margin: 8px 0;
+            width: 50%;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #1a1a1a;
+            border-radius: 8px;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .file-size {
+            font-size: 0.875rem;
+            color: #888;
+        }
+
+        .file-progress {
+            width: 100%;
+            height: 4px;
+            background-color: #1a1a1a;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #1da1f2;
+            transition: width 0.3s ease;
+        }
+
+        .download-button {
+            padding: 6px 12px;
+            background-color: #1da1f2;
+            color: white;
+            border-radius: 16px;
+            font-size: 0.875rem;
+            transition: all 0.3s;
+        }
+
+        .download-button:hover {
+            background-color: #1991db;
+        }
+    </style>
+</head>
+<body class="bg-black text-white">
+    <!-- Sidebar -->
+    <div class="sidebar p-6">
+        <!-- Logo -->
+        <div class="flex items-center gap-3 mb-8">
+            <!-- <div class="w-10 h-10 rounded-full bg-blue-400 logo-pulse"></div> -->
+            <div class="w-12 h-12 rounded-full bg-gray-700">
+                <img src="https://www.cdnsol.com/blog/wp-content/uploads/2018/03/Decentralized-Blockchain-Development.gif" alt="Profile" class="w-full h-full rounded-full">
+              </div>
+            <span class="text-2xl font-bold text-blue-400">DecentraNet</span>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="space-y-2">
+            <a href="/" class="nav-item">
+                <svg class="w-6 h-6 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                Home
+            </a>
+            <a href="/profile/" class="nav-item">
+                <svg class="w-6 h-6 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                Profile
+            </a>
+            <a href="/create-post/" class="nav-item">
+                <svg class="w-6 h-6 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Create Post
+            </a>
+            <a href="/chat/" class="nav-item bg-gray-800">
+                <svg class="w-6 h-6 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                Chat
+            </a>
+            <a href="/group-chat/" class="nav-item">
+                <svg class="w-6 h-6 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                Group Chat
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content p-8 flex">
+        <div class="w-48">
+            <h2 class="text-lg font-semibold mb-4 px-4">Contacts</h2>
+            <div id="users" class="space-y-1 m-4"></div>
+        </div>
+        <div class="mx-auto" style="width: 85%;">
+            
+            <div class="chat-container">
+                <!-- Chat Header -->
+                <div class="border-b border-gray-800 p-4">
+                    <h2 id="selected-user-name" class="text-xl font-semibold">Select a user to chat</h2>
+                </div>
+
+                <!-- Chat Messages -->
+                <div id="chat-box" class="chat-box"></div>
+
+                <!-- Message Input -->
+                <div class="border-t border-gray-800 p-4">
+                    <form id="message-form" class="flex gap-4">
+                        <button 
+                            type="button" 
+                            id="file-upload-btn" 
+                            class="file-upload-button" 
+                            disabled
+                        >
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                            </svg>
+                        </button>
+                        <input 
+                            type="file" 
+                            id="file-input" 
+                            style="display: none;"
+                        >
+                        <input 
+                            type="text" 
+                            id="message-input" 
+                            class="flex-1 bg-gray-800 rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Type a message..." 
+                            required 
+                            disabled
+                        >
+                        <button 
+                            type="submit" 
+                            id="send-button" 
+                            class="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-6 py-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled
+                        >
+                            Send
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/scripts.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const fileUploadBtn = document.getElementById('file-upload-btn');
+            const fileInput = document.getElementById('file-input');
+
+            function enableFileUpload() {
+                fileUploadBtn.disabled = false;
+                fileInput.disabled = false;
+            }
+            if (!localStorage.getItem('userid')) {
+                window.location.href = '/profile/';
+                return;
+            }
+
+            const userId = parseInt(localStorage.getItem('userid'));
+            let selectedUserId = null;
+            let ws = null;
+            let reconnectAttempts = 0;
+            const MAX_RECONNECT_ATTEMPTS = 5;
+
+            // Function to create WebSocket connection
+            function createWebSocket(userId, selectedUserId) {
+                const ws = new WebSocket(`ws://localhost:8000/ws/chat/${userId}/${selectedUserId}`);
+                
+                ws.onopen = () => {
+                    console.log('Connected to chat');
+                    reconnectAttempts = 0; // Reset reconnect attempts on successful connection
+                };
+                
+                ws.onmessage = (event) => {
+                    const formatFileSize = (bytes) => {
+                        if (bytes < 1024) return bytes + ' B';
+                        else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+                        else return (bytes / 1048576).toFixed(1) + ' MB';
+                    };
+                    try {
+                        const data = JSON.parse(event.data);
+                        if (data.type === 'file') {
+                            console.log("789");
+                            
+                            // Display received file message
+                            const chatBox = document.getElementById('chat-box');
+                            const fileMessage = document.createElement('div');
+                            fileMessage.className = 'file-message received';
+                            fileMessage.innerHTML = `
+                                <div class="file-icon">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="file-info">
+                                    <div class="file-name">${data.file_name}</div>
+                                    <div class="file-size">${formatFileSize(data.file_size)}</div>
+                                </div>
+                                <a href="${data.file_url}" class="download-button" download>
+                                    Download
+                                </a>
+                            `;
+                            chatBox.appendChild(fileMessage);
+                            chatBox.scrollTop = chatBox.scrollHeight;
+                        } else {
+                            displayMessage(event.data, 'received');
+                        }
+                    } catch (error) {
+                        console.log("Error parsing JSON:", error);
+                        
+                        displayMessage(event.data, 'received');
+                    }
+                };
+                
+                ws.onerror = (error) => {
+                    console.error("WebSocket error:", error);
+                    if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                        setTimeout(() => connectWebSocket(), 2000 * (reconnectAttempts + 1));
+                        reconnectAttempts++;
+                    } else {
+                        alert("Connection error. Please try refreshing the page.");
+                    }
+                };
+                
+                ws.onclose = () => {
+                    console.log("Disconnected from chat");
+                    if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                        setTimeout(() => connectWebSocket(), 2000);
+                        reconnectAttempts++;
+                    }
+                };
+
+                return ws;
+            }
+
+            // Fetch and display user list
+            fetch('http://127.0.0.1:8000/api/users')
+                .then(response => response.json())
+                .then(users => {
+                    const userList = document.getElementById('users');
+                    users.forEach(user => {
+                        if (user.user_id !== userId) {
+                            const userItem = document.createElement('div');
+                            userItem.className = 'user-list-item';
+                            userItem.dataset.userId = user.user_id;
+                            
+                            const avatar = document.createElement('div');
+                            avatar.className = 'user-avatar';
+                            avatar.textContent = user.Name.charAt(0).toUpperCase();
+                            
+                            const userName = document.createElement('span');
+                            userName.textContent = user.Name;
+                            
+                            userItem.appendChild(avatar);
+                            userItem.appendChild(userName);
+                            userItem.addEventListener('click', () => {
+                                document.querySelectorAll('.user-list-item').forEach(item => 
+                                    item.classList.remove('active')
+                                );
+                                userItem.classList.add('active');
+                                selectUser(user);
+                            });
+                            
+                            userList.appendChild(userItem);
+                        }
+                    });
+                })
+                .catch(error => console.error("Error fetching users:", error));
+
+            function selectUser(user) {
+                selectedUserId = user.user_id;
+                document.getElementById('selected-user-name').textContent = user.Name;
+                document.getElementById('message-input').disabled = false;
+                document.getElementById('send-button').disabled = false;
+                document.getElementById('chat-box').innerHTML = '';
+
+                if (ws) {
+                    ws.close();
+                }
+
+                // Ensure WebSocket is properly initialized
+                connectWebSocket();
+                enableFileUpload();
+            }
+
+            fileUploadBtn.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // Replace the file upload event listener with this updated version
+            fileInput.addEventListener('change', async (e) => {
+    e.preventDefault(); // Prevent default behavior
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Create file message element
+    const chatBox = document.getElementById('chat-box');
+    const fileMessage = document.createElement('div');
+    fileMessage.className = 'file-message sent';
+    
+    const formatFileSize = (bytes) => {
+        if (bytes < 1024) return bytes + ' B';
+        else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        else return (bytes / 1048576).toFixed(1) + ' MB';
+    };
+
+    // Show upload in progress
+    fileMessage.innerHTML = `
+        <div class="file-icon">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+        </div>
+        <div class="file-info">
+            <div class="file-name">${file.name}</div>
+            <div class="file-size">${formatFileSize(file.size)}</div>
+            <div class="file-progress">
+                <div class="progress-bar" style="width: 0%"></div>
+            </div>
+        </div>
+    `;
+
+    chatBox.appendChild(fileMessage);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('sender_id', userId);
+        formData.append('receiver_id', selectedUserId);
+
+        const response = await fetch('http://127.0.0.1:8000/upload-file/', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) throw new Error('Upload failed');
+
+        const data = await response.json();
+        
+        // Update file message with download link
+        fileMessage.innerHTML = `
+            <div class="file-icon">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+            </div>
+            <div class="file-info">
+                <div class="file-name">${file.name}</div>
+                <div class="file-size">${formatFileSize(file.size)}</div>
+            </div>
+            <a href="${data.file_url}" class="download-button" download>
+                Download
+            </a>
+        `;
+
+        // Send file message through WebSocket
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+                type: 'file',
+                file_name: file.name,
+                file_size: file.size,
+                file_url: data.file_url
+            }));
+        }
+
+    } catch (error) {
+        console.error('File upload failed:', error);
+        fileMessage.innerHTML = `
+            <div class="file-icon">
+                <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div class="file-info">
+                <div class="file-name">${file.name}</div>
+                <div class="text-red-500">Upload failed. Please try again.</div>
+            </div>
+        `;
+    }
+
+    // Clear file input
+    fileInput.value = '';
+});
+            function connectWebSocket() {
+                if (ws) {
+                    ws.close();
+                }
+                ws = createWebSocket(userId, selectedUserId);
+                return new Promise((resolve, reject) => {
+                    ws.onopen = () => {
+                        console.log('WebSocket connection established');
+                        resolve(ws);
+                    };
+                    ws.onerror = (error) => {
+                        console.error('WebSocket connection error:', error);
+                        reject(error);
+                    };
+                });
+            }
+
+            function displayMessage(message, type) {
+                const chatBox = document.getElementById('chat-box');
+                const messageDiv = document.createElement('div');
+                messageDiv.textContent = type === 'sent' ? message : message;
+                messageDiv.className = `message ${type}`;
+                chatBox.appendChild(messageDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+
+            document.getElementById('message-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Check if we have a selected user and connection
+                if (!selectedUserId) {
+                    alert('Please select a user to chat with');
+                    return;
+                }
+
+                // Ensure WebSocket is connected
+                if (!ws || ws.readyState !== WebSocket.OPEN) {
+                    try {
+                        await connectWebSocket();
+                    } catch (error) {
+                        alert('Unable to connect to chat. Please try again.');
+                        return;
+                    }
+                }
+
+                const messageInput = document.getElementById('message-input');
+                const message = messageInput.value.trim();
+                
+                if (message) {
+                    try {
+                        ws.send(message);
+                        displayMessage(message, 'sent');
+                        messageInput.value = '';
+                    } catch (error) {
+                        console.error('Error sending message:', error);
+                        alert('Failed to send message. Please try again.');
+                    }
+                }
+            });
+
+            // Add reconnection logic for WebSocket
+            let isReconnecting = false;
+            setInterval(() => {
+                if (selectedUserId && (!ws || ws.readyState === WebSocket.CLOSED) && !isReconnecting) {
+                    isReconnecting = true;
+                    console.log('Attempting to reconnect...');
+                    connectWebSocket()
+                        .then(() => {
+                            isReconnecting = false;
+                            console.log('Reconnected successfully');
+                        })
+                        .catch(() => {
+                            isReconnecting = false;
+                            console.log('Reconnection failed');
+                        });
+                }
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

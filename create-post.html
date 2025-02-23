@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Post - DecentraNet</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <style>
+    /* Custom Animations */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .logo-pulse {
+      animation: pulse 2s infinite;
+    }
+
+    /* Custom Styles */
+    .sidebar {
+      width: 280px;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      background-color: #1a1a1a;
+      border-right: 1px solid #2d2d2d;
+    }
+
+    .main-content {
+      margin-left: 280px;
+      min-height: 100vh;
+      background-color: #000000;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 24px;
+      color: #e5e5e5;
+      transition: all 0.3s;
+      border-radius: 9999px;
+      margin: 4px 0;
+    }
+
+    .nav-item:hover {
+      background-color: #2d2d2d;
+      color: #ffffff;
+    }
+
+    .post-card {
+      background-color: #1a1a1a;
+      border-radius: 16px;
+      border: 1px solid #2d2d2d;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 12px;
+      background-color: #2d2d2d;
+      border: 1px solid #404040;
+      border-radius: 8px;
+      color: white;
+      transition: all 0.3s;
+      resize: none;
+    }
+
+    .input-field:focus {
+      border-color: #1da1f2;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.2);
+    }
+
+    .btn-primary {
+      background-color: #1da1f2;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 9999px;
+      border: none;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+      background-color: #1991db;
+    }
+
+    .char-count {
+      color: #6e767d;
+      font-size: 14px;
+      text-align: right;
+    }
+
+    .success-animation {
+      animation: fadeOut 2s forwards;
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+  </style>
+</head>
+<body class="bg-black text-white">
+  <!-- Sidebar -->
+  <div class="sidebar p-6">
+    <!-- Logo -->
+    <div class="flex items-center gap-3 mb-8">
+        <!-- <div class="w-10 h-10 rounded-full bg-blue-400 logo-pulse"></div> -->
+        <div class="w-12 h-12 rounded-full bg-gray-700">
+            <img src="https://www.cdnsol.com/blog/wp-content/uploads/2018/03/Decentralized-Blockchain-Development.gif" alt="Profile" class="w-full h-full rounded-full">
+          </div>
+        <span class="text-2xl font-bold text-blue-400">DecentraNet</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="space-y-2">
+        <a href="/" class="nav-item">
+            <svg class="w-6 h-6 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            Home
+        </a>
+        <a href="/profile/" class="nav-item">
+            <svg class="w-6 h-6 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            Profile
+        </a>
+        <a href="/create-post/" class="nav-item bg-gray-800">
+            <svg class="w-6 h-6 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Create Post
+        </a>
+        <a href="/chat/" class="nav-item">
+            <svg class="w-6 h-6 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+            Chat
+        </a>
+        <a href="/group-chat/" class="nav-item">
+            <svg class="w-6 h-6 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+            Group Chat
+        </a>
+    </nav>
+</div>
+
+  <!-- Main Content -->
+  <div class="main-content p-8">
+    <div class="max-w-2xl mx-auto">
+      <div class="post-card p-6">
+        <h1 class="text-2xl font-bold mb-6">Create Post</h1>
+        
+        <!-- Success Message -->
+        <div id="success-message" class="hidden mb-4 p-4 bg-green-900/50 text-green-400 rounded-lg">
+          Post created successfully!
+        </div>
+
+        <!-- Post Form -->
+        <form id="post-form" class="space-y-6">
+        <div class="space-y-2">
+            <label class="text-sm text-gray-400">Content</label>
+            <textarea 
+                id="content" 
+                name="content" 
+                class="input-field h-40" 
+                maxlength="500"
+                required
+            ></textarea>
+            <div class="char-count" id="content-count">0/500</div>
+            </div>
+          <div class="space-y-2">
+            <label class="text-sm text-gray-400">Papper Title</label>
+            <input 
+              type="text" 
+              id="title" 
+              name="title" 
+              class="input-field" 
+              maxlength="100"
+            >
+            <div class="char-count" id="title-count">0/100</div>
+          </div>
+
+          
+
+          <div class="space-y-2">
+            <label class="text-sm text-gray-400">Paper Link (optional)</label>
+            <input 
+              type="url" 
+              id="paper-link" 
+              name="paper_link" 
+              class="input-field"
+              placeholder="https://"
+            >
+          </div>
+
+          <button type="submit" class="btn-primary w-full">
+            Create Post
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script src="/scripts.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      redirectToProfileIfNotLoggedIn();
+
+      // Character count updates
+      const titleInput = document.getElementById('title');
+      const contentInput = document.getElementById('content');
+      const titleCount = document.getElementById('title-count');
+      const contentCount = document.getElementById('content-count');
+
+      titleInput.addEventListener('input', () => {
+        titleCount.textContent = `${titleInput.value.length}/100`;
+      });
+
+      contentInput.addEventListener('input', () => {
+        contentCount.textContent = `${contentInput.value.length}/500`;
+      });
+
+      // Form submission
+      document.getElementById('post-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const userId = localStorage.getItem('userid');
+        const formData = new FormData(e.target);
+        const postData = {
+          user_id: userId,
+          title: formData.get('title'),
+          content: formData.get('content'),
+          paper_link: formData.get('paper_link') || null
+        };
+
+        try {
+          const response = await fetch('http://127.0.0.1:8000/create-post/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(postData)
+          });
+
+          if (response.ok) {
+            const successMessage = document.getElementById('success-message');
+            successMessage.classList.remove('hidden');
+            successMessage.classList.add('success-animation');
+            
+            setTimeout(() => {
+              window.location.href = '/';
+            }, 1500);
+          } else {
+            throw new Error('Failed to create post');
+          }
+        } catch (error) {
+          alert('Error creating post. Please try again.');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

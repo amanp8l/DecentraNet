@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        #chatbox { width: 80%; height: 300px; border: 1px solid #ccc; overflow-y: scroll; margin: auto; padding: 10px; }
+        input, button { margin-top: 10px; padding: 8px; }
+    </style>
+</head>
+<body>
+    <h2>WebSocket Chat</h2>
+    <div id="chatbox"></div>
+    <input type="text" id="messageInput" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+    <input type="file" id="fileInput">
+    <button onclick="sendFile()">Send File</button>
+
+    <script>
+        let ws = new WebSocket("ws://localhost:8000/ws");
+        ws.onmessage = function(event) {
+            let chatbox = document.getElementById("chatbox");
+            if (event.data.startsWith("FILE:")) {
+                let fileLink = event.data.split("FILE:")[1];
+                chatbox.innerHTML += `<p><a href="${fileLink}" target="_blank">Download File</a></p>`;
+            } else {
+                chatbox.innerHTML += "<p>" + event.data + "</p>";
+            }
+            chatbox.scrollTop = chatbox.scrollHeight;
+        };
+
+        function sendMessage() {
+            let input = document.getElementById("messageInput");
+            ws.send(input.value);
+            input.value = "";
+        }
+
+        function sendFile() {
+            let fileInput = document.getElementById("fileInput").files[0];
+            let formData = new FormData();
+            formData.append("file", fileInput);
+
+            fetch("http://localhost:8000/upload/", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => ws.send("FILE:" + data.file_url));
+        }
+    </script>
+</body>
+</html>

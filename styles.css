@@ -1,0 +1,98 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  header nav a {
+    color: white;
+    margin-left: 15px;
+    text-decoration: none;
+  }
+  
+  main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+  
+  #user-list {
+    width: 25%;
+    border-right: 1px solid #ccc;
+    padding: 10px;
+    overflow-y: auto;
+  }
+  
+  #user-list h2 {
+    margin-top: 0;
+  }
+  
+  #user-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  #user-list li {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+  }
+  
+  #user-list li:hover {
+    background-color: #f0f0f0;
+  }
+  
+  #chat-interface {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    overflow: hidden;
+  }
+  
+  #chat-box {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  #message-form {
+    display: flex;
+  }
+  
+  #message-form input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+  }
+  
+  #message-form button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  #message-form button:disabled {
+    background-color: #ccc;
+  }
+
+
+  .upvote-btn.upvoted span {
+    font-weight: bold; /* Make the count bold when upvoted */
+  }
