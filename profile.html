@@ -331,7 +331,7 @@
 
       // Fetch user_id based on metamask_id
       async function getUserId(metamaskId) {
-        const response = await fetch(`http://127.0.0.1:8000/get-user-id/?metamask_id=${metamaskId}`);
+        const response = await fetch(`https://decentranet.amanpatel.in/get-user-id/?metamask_id=${metamaskId}`);
         if (!response.ok) {
           throw new Error('User not found');
         }
@@ -346,7 +346,7 @@
             
           const userId = await getUserId(metamaskId); // Fetch user_id
           localStorage.setItem('userid', userId); // Save user_id in local storage
-          const response = await fetch(`http://127.0.0.1:8000/read-profile/${userId}`);
+          const response = await fetch(`https://decentranet.amanpatel.in/read-profile/${userId}`);
           if (!response.ok) {
             throw new Error('User not found');
           }
@@ -383,8 +383,8 @@
 
         const userId = localStorage.getItem('userid');
         const endpoint = profileActionBtn.textContent === 'Register'
-          ? `http://127.0.0.1:8000/create-profile/`
-          : `http://127.0.0.1:8000/update-profile/${userId}`;
+          ? `https://decentranet.amanpatel.in/create-profile/`
+          : `https://decentranet.amanpatel.in/update-profile/${userId}`;
 
         const method = profileActionBtn.textContent === 'Register' ? 'POST' : 'PUT';
 

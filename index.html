@@ -160,7 +160,7 @@
       redirectToProfileIfNotLoggedIn();
       let isUpvoted = false;
   
-      fetch('http://127.0.0.1:8000/read-all-posts/')
+      fetch('https://decentranet.amanpatel.in/read-all-posts/')
     .then(response => response.json())
     .then(posts => {
         const trendingContainer = document.getElementById('trending-container');
@@ -326,8 +326,8 @@
     function handleUpvote(postId, btn) {
       const isUpvoted = btn.dataset.upvoted === 'true';
       const url = isUpvoted 
-        ? `http://127.0.0.1:8000/delete-upvote/${postId}` 
-        : 'http://127.0.0.1:8000/create-upvote/';
+        ? `https://decentranet.amanpatel.in/delete-upvote/${postId}` 
+        : 'https://decentranet.amanpatel.in/create-upvote/';
       const method = isUpvoted ? 'DELETE' : 'POST';
 
       fetch(url, {
@@ -356,7 +356,7 @@
       const commentContent = textarea.value.trim();
       if (!commentContent) return;
 
-      fetch('http://127.0.0.1:8000/create-comment/', {
+      fetch('https://decentranet.amanpatel.in/create-comment/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ post_id: postId, user_id: 1, content: commentContent }) // Replace `user_id` with actual user ID
@@ -370,7 +370,7 @@
     }
 
     function loadComments(postId, postDiv) {
-      fetch(`http://127.0.0.1:8000/read-all-posts/`)
+      fetch(`https://decentranet.amanpatel.in/read-all-posts/`)
         .then(response => response.json())
         .then(posts => {
           const post = posts.find(p => p.post_id === postId);

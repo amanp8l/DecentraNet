@@ -242,7 +242,7 @@ if (!localStorage.getItem('userid')) {
         };
 
         try {
-          const response = await fetch('http://127.0.0.1:8000/create-post/', {
+          const response = await fetch('https://decentranet.amanpatel.in/create-post/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(postData)
