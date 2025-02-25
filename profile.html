@@ -288,7 +288,7 @@
         if (accounts.length === 0) {
           walletStatus.innerHTML = `
             <p>MetaMask wallet is not connected.</p>
-            <button id="connect-wallet">Connect Wallet</button>
+            <button id="connect-wallet" class="btn btn-primary">Connect Wallet</button>
           `;
           document.getElementById('connect-wallet').addEventListener('click', connectWallet);
         } else {

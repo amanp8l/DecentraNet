@@ -208,7 +208,12 @@
   <script src="/scripts.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      redirectToProfileIfNotLoggedIn();
+      // redirectToProfileIfNotLoggedIn();
+
+if (!localStorage.getItem('userid')) {
+                window.location.href = '/profile/';
+                return;
+            }
 
       // Character count updates
       const titleInput = document.getElementById('title');

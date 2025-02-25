@@ -7,7 +7,7 @@ function isLoggedIn() {
   // Redirect to the profile page if not logged in
   function redirectToProfileIfNotLoggedIn() {
     if (!isLoggedIn()) {
-      window.location.href = '/profile';
+      window.location.href = 'https://decentranet.amanpatel.in/profile/';
     }
   }
   

@@ -300,7 +300,11 @@
     }
     
     document.addEventListener("DOMContentLoaded", () => {
-      redirectToProfileIfNotLoggedIn();
+      // redirectToProfileIfNotLoggedIn();
+if (!localStorage.getItem('userid')) {
+                window.location.href = '/profile/';
+                return;
+            }
 
       fetch('http://127.0.0.1:8000/read-all-posts/')
         .then(response => response.json())
